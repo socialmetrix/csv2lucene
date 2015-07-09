@@ -1,6 +1,6 @@
 package la.smx.util.csv2lucene
 
-import java.io.FileReader
+import java.io.{File, FileReader}
 
 import la.smx.util.csv2lucene.util.Lucene
 import la.smx.util.csv2lucene.util.ResourceManagement._
@@ -15,13 +15,16 @@ import scala.collection.JavaConversions.{asScalaIterator, _}
  */
 object Indexer {
 
-  def indexCSV(csvFile: String) {
+  def indexCSV(csvFile: String) = {
     println(s"Indexing ${csvFile} ...")
+
+
 
     using(new FileReader(csvFile)) { reader =>
 
       using(new CSVParser(reader, CSVFormat.EXCEL.withHeader())) { parser =>
-        val fields = parser.getHeaderMap
+        // extract fields name from CSV header
+        val fields = parser.getHeaderMap.keySet().toSet[String]
 
         using(Lucene.openIndexDir(csvFile)) { dir =>
 
@@ -30,10 +33,9 @@ object Indexer {
             writer = Lucene.createIndexWriter(dir)
 
             for (record <- parser.iterator()) {
-              // print(r.getRecordNumber + " / ")
-              print(".")
+              if (record.getRecordNumber % 25 == 0) print(".")
 
-              val doc = addToIndex(fields.keySet.toSet, record)
+              val doc = addToIndex(fields, record)
               if (doc.isDefined)
                 writer.addDocument(doc.get)
             }
@@ -41,11 +43,15 @@ object Indexer {
             writer.forceMerge(10)
             println("Done")
 
+          } catch {
+            case e: Exception => println(e.getMessage)
 
           } finally {
             writer.close()
           }
         }
+
+        fields.map(_.toLowerCase())
       }
     }
   }
