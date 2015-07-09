@@ -1,6 +1,6 @@
 package la.smx.util.csv2lucene.util
 
-import org.apache.lucene.index.IndexWriter
+import scala.language.reflectiveCalls
 
 /**
  * Created by arjones on 7/8/15.
@@ -12,7 +12,6 @@ object ResourceManagement {
       operation(toClose)
 
     } finally {
-//            println(s"   Closing ${operation.toString()}")
       toClose.close()
     }
   }
