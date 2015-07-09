@@ -19,10 +19,9 @@ object Terminal extends App {
     help()
 
   val csvFile: String = args(0)
-  isValidFile(csvFile)
+  checkFile(csvFile)
 
-  println(s"Preparing to Index ... ${csvFile}")
-
+  println(s"Preparing to Index ...")
   val fields = Indexer.indexCSV(csvFile)
 
   banner()
@@ -33,12 +32,9 @@ object Terminal extends App {
     new StringsCompleter(fields)
   )
 
-
   val out = new PrintWriter(reader.getOutput())
 
   using(new Searcher(csvFile)) { searcher =>
-    out.println
-
     breakable {
       while (true) {
         val line: String = reader.readLine()
@@ -50,8 +46,7 @@ object Terminal extends App {
         if (line == "help")
           out.println(searcher.querySyntaxHelp)
 
-        else {
-
+        else
           try {
             searcher.search(line, out)
 
@@ -59,14 +54,12 @@ object Terminal extends App {
             case e: Exception => out.println("ERROR: " + e.getMessage)
           }
 
-        }
-
         out.println
       }
     }
   }
 
-  reader.clearScreen()
+  reader.getTerminal.restore
   println("Goodbye!")
 
   def help(): Unit = {
@@ -89,13 +82,12 @@ object Terminal extends App {
         |    Type help to get detailed information
         |    Press [tab] to auto-complete fields
         |    Press q to quit
-        |
       """.stripMargin
 
     println(message)
   }
 
-  def isValidFile(csvFile: String): Unit = {
+  def checkFile(csvFile: String): Unit = {
     if (!new File(csvFile).exists()) {
       println(s"\nFile ${csvFile} not found!\n")
 

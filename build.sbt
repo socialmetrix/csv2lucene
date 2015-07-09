@@ -18,6 +18,8 @@ libraryDependencies ++= Seq(
   "org.scala-lang" % "jline" % "2.10.5"
 )
 
+assemblyJarName in assembly := s"${name.value}-${version.value}.jar"
+
 assemblyMergeStrategy in assembly := {
   case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
   case _ => MergeStrategy.first

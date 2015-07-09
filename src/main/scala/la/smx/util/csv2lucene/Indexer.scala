@@ -41,7 +41,7 @@ object Indexer {
             }
 
             writer.forceMerge(10)
-            println("Done")
+            println(" done")
 
           } catch {
             case e: Exception => println(e.getMessage)
