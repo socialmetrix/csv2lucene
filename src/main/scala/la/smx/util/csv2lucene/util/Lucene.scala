@@ -12,7 +12,6 @@ import org.apache.lucene.store.FSDirectory
  * Created by arjones on 7/8/15.
  */
 object Lucene {
-
   def createIndexWriter(dir: FSDirectory) = {
     val analyzer = new StandardAnalyzer()
     val conf = new IndexWriterConfig(analyzer)
@@ -24,7 +23,6 @@ object Lucene {
 
   def openIndexDir(csvFile: String) = {
     val indexDir = "indices" + File.separator + Hashing.MD5(csvFile)
-
     FSDirectory.open(Paths.get(indexDir))
   }
 }

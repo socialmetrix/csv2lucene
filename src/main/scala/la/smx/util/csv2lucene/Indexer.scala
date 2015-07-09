@@ -18,8 +18,6 @@ object Indexer {
   def indexCSV(csvFile: String) = {
     println(s"Indexing ${csvFile} ...")
 
-
-
     using(new FileReader(csvFile)) { reader =>
 
       using(new CSVParser(reader, CSVFormat.EXCEL.withHeader())) { parser =>
@@ -28,32 +26,28 @@ object Indexer {
 
         using(Lucene.openIndexDir(csvFile)) { dir =>
 
-          var writer: IndexWriter = null
-          try {
-            writer = Lucene.createIndexWriter(dir)
-
-            for (record <- parser.iterator()) {
-              if (record.getRecordNumber % 25 == 0) print(".")
-
-              val doc = addToIndex(fields, record)
-              if (doc.isDefined)
-                writer.addDocument(doc.get)
-            }
-
-            writer.forceMerge(10)
-            println(" done")
-
-          } catch {
-            case e: Exception => println(e.getMessage)
-
-          } finally {
-            writer.close()
+          using(Lucene.createIndexWriter(dir)) { writer =>
+            index(parser, fields, writer)
           }
+
         }
 
         fields.map(_.toLowerCase())
       }
     }
+  }
+
+  def index(parser: CSVParser, fields: Set[String], writer: IndexWriter): Unit = {
+    for (record <- parser.iterator()) {
+      if (record.getRecordNumber % 25 == 0) print(".")
+
+      val doc = addToIndex(fields, record)
+      if (doc.isDefined)
+        writer.addDocument(doc.get)
+    }
+
+    writer.forceMerge(10)
+    println(" done")
   }
 
   def addToIndex(fields: Set[String], data: CSVRecord): Option[Document] = {
