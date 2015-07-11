@@ -3,6 +3,7 @@ package la.smx.util.csv2lucene.util
 import java.io.File
 import java.nio.file.Paths
 
+import la.smx.util.csv2lucene.AccentInsensitiveAnalyzer
 import org.apache.lucene.analysis.standard.StandardAnalyzer
 import org.apache.lucene.index.IndexWriterConfig.OpenMode
 import org.apache.lucene.index.{IndexWriter, IndexWriterConfig}
@@ -13,7 +14,7 @@ import org.apache.lucene.store.FSDirectory
  */
 object Lucene {
   def createIndexWriter(dir: FSDirectory) = {
-    val analyzer = new StandardAnalyzer()
+    val analyzer = new AccentInsensitiveAnalyzer()
     val conf = new IndexWriterConfig(analyzer)
     conf.setOpenMode(OpenMode.CREATE)
     conf.setRAMBufferSizeMB(256.0)

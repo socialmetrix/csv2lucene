@@ -17,7 +17,7 @@ class Searcher(csvFile: String) {
   val reader = DirectoryReader.open(dir)
 
   // Parse a simple query that searches for "text":
-  val analyzer = new StandardAnalyzer()
+  val analyzer = new AccentInsensitiveAnalyzer()
   val parser = new QueryParser("content", analyzer)
 
   def search(queryStr: String, out: PrintWriter) {
