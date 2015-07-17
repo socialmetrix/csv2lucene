@@ -13,16 +13,18 @@ import scala.tools.jline.console.completer.StringsCompleter
 
 import scala.util.control.Breaks._
 import collection.JavaConversions._
+import ui.FileChooser
 
 object Terminal extends App {
   if (args.length == 0)
     help()
 
-  val csvFile: String = args(0)
-  checkFile(csvFile)
+  val target = checkFile(args(0))
+  if (target.isEmpty)
+    help()
 
   println(s"Preparing to Index ...")
-  val fields = Indexer.indexCSV(csvFile)
+  val fields = Indexer.indexCSV(target.get)
 
   banner()
 
@@ -34,7 +36,7 @@ object Terminal extends App {
 
   val out = new PrintWriter(reader.getOutput())
 
-  using(new Searcher(csvFile)) { searcher =>
+  using(new Searcher(target.get)) { searcher =>
     breakable {
       while (true) {
         val line: String = reader.readLine()
@@ -65,6 +67,8 @@ object Terminal extends App {
   def help(): Unit = {
     println("Missing CSV file")
     println(s" ${this.getClass.getSimpleName} <csv_file>")
+    println(s" ${this.getClass.getSimpleName} -gui")
+
     sys.exit(1)
   }
 
@@ -87,12 +91,29 @@ object Terminal extends App {
     println(message)
   }
 
-  def checkFile(csvFile: String): Unit = {
-    if (!new File(csvFile).exists()) {
-      println(s"\nFile ${csvFile} not found!\n")
+  def checkFile(file: String): Option[File] =
+    if (file == "-gui") {
 
-      help()
+      // show file selector
+      val f = FileChooser.getFile()
+      if (f == null) {
+        println("ERROR: You must select a file!")
+        None
+
+      } else
+        Some(f)
+
+    } else {
+      // check as a current file
+      val f = new File(file)
+      if (f.exists())
+        Some(f)
+
+      else {
+        println(s"ERROR: File ${file} not found!")
+        None
+      }
     }
-  }
+
 
 }

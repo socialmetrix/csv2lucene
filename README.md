@@ -5,12 +5,14 @@ It relies on [Apache Lucene](http://lucene.apache.org/core/) so you get its powe
 ##Usage
 The utility is built into a fatjar, so you just need to have **Java 7** installed
 ```
-java -jar csv2lucene-1.0.jar <path-to-csv-file>
+java -jar csv2lucene-1.1.jar <path-to-csv-file>
+
+java -jar csv2lucene-1.1.jar -gui
 ```
 
 You can pick a sample into the examples directory:
 ```
-java -jar target/scala-2.10/csv2lucene-1.0.jar examples/Brands_Share_of_Voice_201507071516_comments.csv
+java -jar target/scala-2.10/csv2lucene-1.1.jar examples/Brands_Share_of_Voice_201507071516_comments.csv
 Preparing to Index ...
 Indexing examples/Brands_Share_of_Voice_201507071516_comments.csv ...
 .........Done
@@ -33,10 +35,11 @@ search>
 * Press [tab] to autocomplete of CSV's fields
 * Full Lucene Query support, type `help`
 * Index/Tokenize all CSV fields
+* AccentInsensitive (são paulo and sao paulo matches)
+* Parameter `-gui` to open a visual file selector
 
 ##Build
 Use [sbt](http://www.scala-sbt.org/) to build:
 ```
 sbt assembly
 ```
-

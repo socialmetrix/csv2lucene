@@ -2,11 +2,13 @@ import sbt.Keys._
 
 name := "csv2lucene"
 
-version := "1.0"
+version := "1.1"
 
 organization := "la.smx"
 
 scalaVersion := "2.10.5"
+
+scalacOptions := Seq("-deprecation", "-unchecked", "-feature")
 
 mainClass in Compile := Some("la.smx.util.csv2lucene.Terminal")
 
@@ -19,6 +21,9 @@ libraryDependencies ++= Seq(
 )
 
 assemblyJarName in assembly := s"${name.value}-${version.value}.jar"
+
+//import sbtassembly.AssemblyPlugin.defaultShellScript
+//assemblyOption in assembly := (assemblyOption in assembly).value.copy(prependShellScript = Some(defaultShellScript))
 
 assemblyMergeStrategy in assembly := {
   case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
