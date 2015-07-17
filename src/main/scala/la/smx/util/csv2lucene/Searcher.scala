@@ -1,6 +1,6 @@
 package la.smx.util.csv2lucene
 
-import java.io.PrintWriter
+import java.io.{File, PrintWriter}
 
 import la.smx.util.csv2lucene.util.Lucene
 import org.apache.lucene.analysis.standard.StandardAnalyzer
@@ -11,8 +11,8 @@ import org.apache.lucene.search.IndexSearcher
 /**
  * Created by arjones on 7/7/15.
  */
-class Searcher(csvFile: String) {
-  val dir = Lucene.openIndexDir(csvFile)
+class Searcher(file: File) {
+  val dir = Lucene.openIndexDir(file)
   // Now search the index:
   val reader = DirectoryReader.open(dir)
 
@@ -21,7 +21,7 @@ class Searcher(csvFile: String) {
   val parser = new QueryParser("content", analyzer)
 
   def search(queryStr: String, out: PrintWriter) {
-    if(queryStr.isEmpty)
+    if (queryStr.isEmpty)
       return
 
     val searcher = new IndexSearcher(reader)

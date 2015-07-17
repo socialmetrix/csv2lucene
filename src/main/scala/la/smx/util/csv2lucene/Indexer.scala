@@ -15,7 +15,7 @@ import scala.collection.JavaConversions.{asScalaIterator, _}
  */
 object Indexer {
 
-  def indexCSV(csvFile: String) = {
+  def indexCSV(csvFile: File) = {
     println(s"Indexing ${csvFile} ...")
 
     using(new FileReader(csvFile)) { reader =>

@@ -22,8 +22,8 @@ object Lucene {
     new IndexWriter(dir, conf)
   }
 
-  def openIndexDir(csvFile: String) = {
-    val indexDir = "indices" + File.separator + Hashing.MD5(csvFile)
+  def openIndexDir(csvFile: File) = {
+    val indexDir = "indices" + File.separator + Hashing.MD5(csvFile.toString)
     FSDirectory.open(Paths.get(indexDir))
   }
 }
