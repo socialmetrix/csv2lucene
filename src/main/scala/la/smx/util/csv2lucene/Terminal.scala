@@ -36,7 +36,8 @@ object Terminal extends App {
 
   val out = new PrintWriter(reader.getOutput())
 
-  using(new Searcher(target.get)) { searcher =>
+  using(new Searcher(target.get, fields)) { searcher =>
+
     breakable {
       while (true) {
         val line: String = reader.readLine()
@@ -59,6 +60,7 @@ object Terminal extends App {
         out.println
       }
     }
+
   }
 
   reader.getTerminal.restore
