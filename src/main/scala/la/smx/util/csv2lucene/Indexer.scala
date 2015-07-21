@@ -28,6 +28,7 @@ object Indexer {
 
           using(Lucene.createIndexWriter(dir)) { writer =>
             index(parser, fields, writer)
+
           }
 
         }

@@ -11,14 +11,15 @@ import org.apache.lucene.search.IndexSearcher
 /**
  * Created by arjones on 7/7/15.
  */
-class Searcher(file: File) {
-  val dir = Lucene.openIndexDir(file)
-  // Now search the index:
-  val reader = DirectoryReader.open(dir)
+class Searcher(file: File, fields: Set[String]) {
+  val DEFAULT_FIELD_FOR_QUERY_TERMS = detectDefaultField
+  println(s"Default field for query terms is [ ${DEFAULT_FIELD_FOR_QUERY_TERMS} ]\n")
 
-  // Parse a simple query that searches for "text":
+  val dir = Lucene.openIndexDir(file)
+
+  val reader = DirectoryReader.open(dir)
   val analyzer = new AccentInsensitiveAnalyzer()
-  val parser = new QueryParser("content", analyzer)
+  val parser = new QueryParser(DEFAULT_FIELD_FOR_QUERY_TERMS, analyzer)
 
   def search(queryStr: String, out: PrintWriter) {
     if (queryStr.isEmpty)
@@ -39,7 +40,7 @@ class Searcher(file: File) {
     for (hit <- hits) {
       val doc = searcher.doc(hit.doc)
 
-      out.println(doc.get("content") + "\t" + doc.get("link"))
+      out.println(doc.get(DEFAULT_FIELD_FOR_QUERY_TERMS) + "\t" + doc.get("link"))
       out.println("-" * 35)
     }
 
@@ -82,5 +83,27 @@ class Searcher(file: File) {
       |
       |
     """.stripMargin
+
+  /**
+   * This method try to identify which field should be used
+   * as default to the search, ie: "content", "text".
+   * The order in the list is from most likely to least likely, if the
+   * target CSV contains both fields, the first matched will be
+   * selected as default
+   */
+  def detectDefaultField() = {
+    val possibleFields = List("content", "text", "contenido", "texto", "conteúdo")
+
+    val options: List[String] = for (field <- fields.toList;
+                                     p <- possibleFields if field.contains(p)) yield p
+
+    if (options.size == 0) {
+      println("WARN: no default field found! Always query using notation `field:value`. ie: content:test")
+      "none"
+
+    } else
+      options(0)
+  }
+
 
 }
