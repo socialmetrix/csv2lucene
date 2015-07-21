@@ -13,7 +13,7 @@ import org.apache.lucene.search.IndexSearcher
  */
 class Searcher(file: File, fields: Set[String]) {
   val DEFAULT_FIELD_FOR_QUERY_TERMS = detectDefaultField
-  println(s"Default field for query terms is [ ${DEFAULT_FIELD_FOR_QUERY_TERMS} ]\n")
+  println(s"Default field for query terms: ${DEFAULT_FIELD_FOR_QUERY_TERMS}\n")
 
   val dir = Lucene.openIndexDir(file)
 
