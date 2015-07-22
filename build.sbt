@@ -2,7 +2,7 @@ import sbt.Keys._
 
 name := "csv2lucene"
 
-version := "1.1.2"
+version := "1.1.3"
 
 organization := "la.smx"
 
