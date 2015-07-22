@@ -9,6 +9,7 @@ import org.apache.lucene.document.{Document, Field, LongField, TextField}
 import org.apache.lucene.index.IndexWriter
 
 import scala.collection.JavaConversions.{asScalaIterator, _}
+import scala.util.control.Breaks._
 
 /**
  * Created by arjones on 7/7/15.
@@ -23,6 +24,7 @@ object Indexer {
       using(new CSVParser(reader, CSVFormat.EXCEL.withHeader())) { parser =>
         // extract fields name from CSV header
         val fields = parser.getHeaderMap.keySet().toSet[String]
+
 
         using(Lucene.openIndexDir(csvFile)) { dir =>
 
@@ -39,12 +41,28 @@ object Indexer {
   }
 
   def index(parser: CSVParser, fields: Set[String], writer: IndexWriter): Unit = {
-    for (record <- parser.iterator()) {
-      if (record.getRecordNumber % 25 == 0) print(".")
+    val it = parser.iterator()
 
-      val doc = addToIndex(fields, record)
-      if (doc.isDefined)
-        writer.addDocument(doc.get)
+    breakable {
+      while (true) {
+        try {
+          val record = it.next()
+          if (record.getRecordNumber % 25 == 0) print(".")
+
+          val doc = addToIndex(fields, record)
+          if (doc.isDefined)
+            writer.addDocument(doc.get)
+
+        } catch {
+
+          // Ugly hack because CSVParser throws Exceptions for malformed CSV when testing `it.hasNext()`
+          case e: NoSuchElementException => break;
+
+          case e: Exception => println(s"\tERROR: ${e}")
+
+        }
+
+      }
     }
 
     writer.forceMerge(10)
